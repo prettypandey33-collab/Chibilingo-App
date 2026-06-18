@@ -1,0 +1,22 @@
+[
+  {"id":1,"korean":"안녕하세요","romanized":"annyeonghaseyo","english":"Hello","hindi":"नमस्ते","category":"greetings"},
+  {"id":2,"korean":"감사합니다","romanized":"gamsahamnida","english":"Thank you","hindi":"धन्यवाद","category":"greetings"},
+  {"id":3,"korean":"죄송합니다","romanized":"joesonghamnida","english":"Sorry","hindi":"क्षमा करें","category":"greetings"},
+  {"id":4,"korean":"물","romanized":"mul","english":"Water","hindi":"पानी","category":"food"},
+  {"id":5,"korean":"밥","romanized":"bap","english":"Rice/Meal","hindi":"चावल/खाना","category":"food"},
+  {"id":6,"korean":"학교","romanized":"hakgyo","english":"School","hindi":"स्कूल","category":"places"},
+  {"id":7,"korean":"선생님","romanized":"seonsaengnim","english":"Teacher","hindi":"शिक्षक","category":"people"},
+  {"id":8,"korean":"학생","romanized":"haksaeng","english":"Student","hindi":"छात्र","category":"people"},
+  {"id":9,"korean":"책","romanized":"chaek","english":"Book","hindi":"किताब","category":"objects"},
+  {"id":10,"korean":"컴퓨터","romanized":"keompyuteo","english":"Computer","hindi":"कंप्यूटर","category":"objects"},
+  {"id":11,"korean":"사랑","romanized":"sarang","english":"Love","hindi":"प्यार","category":"emotions"},
+  {"id":12,"korean":"행복","romanized":"haengbok","english":"Happiness","hindi":"खुशी","category":"emotions"},
+  {"id":13,"korean":"가다","romanized":"gada","english":"Go","hindi":"जाना","category":"verbs"},
+  {"id":14,"korean":"오다","romanized":"oda","english":"Come","hindi":"आना","category":"verbs"},
+  {"id":15,"korean":"먹다","romanized":"meokda","english":"Eat","hindi":"खाना","category":"verbs"},
+  {"id":16,"korean":"마시다","romanized":"masida","english":"Drink","hindi":"पीना","category":"verbs"},
+  {"id":17,"korean":"크다","romanized":"keuda","english":"Big","hindi":"बड़ा","category":"adjectives"},
+  {"id":18,"korean":"작다","romanized":"jakda","english":"Small","hindi":"छोटा","category":"adjectives"},
+  {"id":19,"korean":"예쁘다","romanized":"yeppeuda","english":"Pretty","hindi":"सुंदर","category":"adjectives"},
+  {"id":20,"korean":"날씨","romanized":"nalssi","english":"Weather","hindi":"मौसम","category":"nature"}
+]
