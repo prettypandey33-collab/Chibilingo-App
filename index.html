@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KoreBloom – Learn Korean</title>
+    <meta name="monetag" content="108d8db24e0e226aa3ccf7171323173b" />
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', 'Noto Sans KR', system-ui, sans-serif;
+            background: #f0f4f8;
+            color: #1a1a2e;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 12px;
+        }
+        #app {
+            max-width: 480px;
+            width: 100%;
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .app-header {
+            background: linear-gradient(145deg, #22c55e, #15803d);
+            padding: 24px 20px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo { font-size: 28px; font-weight: 800; }
+        .nav-tabs {
+            display: flex;
+            background: #f8fafc;
+            padding: 8px 12px 4px;
+            gap: 4px;
+        }
+        .nav-tabs button {
+            flex: 1;
+            padding: 12px 8px;
+            border: none;
+            background: transparent;
+            font-weight: 600;
+            color: #475569;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+        .nav-tabs button.active {
+            background: white;
+            color: #22c55e;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .page { display: none; padding: 20px; }
+        .page.active { display: block; }
+
+        .flashcard {
+            background: #f8fafc;
+            border: 3px solid #22c55e;
+            border-radius: 24px;
+            padding: 32px 20px;
+            text-align: center;
+            min-height: 260px;
+            cursor: pointer;
+        }
+        .korean { font-size: 42px; font-weight: 700; }
+        .romanized { font-size: 18px; color: #64748b; margin-top: 8px; }
+        .translations { margin-top: 20px; padding-top: 16px; border-top: 2px dashed #ddd; }
+        .en { font-size: 22px; font-weight: 600; color: #1e40af; }
+        .hi { font-size: 19px; color: #22c55e; margin-top: 4px; }
+
+        button.primary {
+            background: #22c55e;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 9999px;
+            font-weight: 600;
+        }
+        .dict-list { max-height: 420px; overflow-y: auto; }
+        .dict-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .quiz-options button {
+            padding: 14px;
+            margin: 6px 0;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            background: white;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app">
+
+    <!-- HEADER -->
+    <header class="app-header">
+        <div class="logo">🌱 KoreBloom</div>
+        <div style="display:flex; gap:16px; font-size:15px;">
+            <div>🔥 <span id="streakNum">0</span></div>
+            <div>📖 <span id="wordCount">0</span></div>
+        </div>
+    </header>
+
+    <!-- NAV -->
+    <nav class="nav-tabs">
+        <button class="active" data-page="home">🏠 Home</button>
+        <button data-page="learn">📚 Learn</button>
+        <button data-page="dictionary">🔍 Dict</button>
+        <button data-page="quiz">🧠 Quiz</button>
+    </nav>
+
+    <!-- HOME -->
+    <section class="page active" id="page-home">
+        <h2 style="font-size:22px; margin-bottom:8px;">안녕하세요! 👋</h2>
+        <p style="color:#64748b; margin-bottom:20px;">Master Korean with fun!</p>
+
+        <div onclick="switchPage('learn')" style="background:#f0fdf4; border:2px solid #86efac; padding:20px; border-radius:20px; text-align:center; margin-bottom:16px; cursor:pointer;">
+            <span style="font-size:48px;">📚</span><br>
+            <strong>Start Learning</strong>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <div onclick="switchPage('quiz')" style="background:white; padding:18px; border-radius:16px; text-align:center; box-shadow:0 4px 12px rgba(0,0,0,0.06); cursor:pointer;">
+                🧠<br><strong>Quiz</strong>
+            </div>
+            <div onclick="switchPage('dictionary')" style="background:white; padding:18px; border-radius:16px; text-align:center; box-shadow:0 4px 12px rgba(0,0,0,0.06); cursor:pointer;">
+                🔍<br><strong>Dictionary</strong>
+            </div>
+        </div>
+    </section>
+
+    <!-- LEARN -->
+    <section class="page" id="page-learn">
+        <div class="flashcard" id="flashcard" onclick="revealTranslation()">
+            <div class="korean" id="fcKorean">안녕하세요</div>
+            <div class="romanized" id="fcRoman">annyeonghaseyo</div>
+            <div class="translations" id="fcTranslations" style="display:none;">
+                <div class="en" id="fcEn">Hello</div>
+                <div class="hi" id="fcHi">नमस्ते</div>
+            </div>
+            <div id="fcHint" style="margin-top:20px; color:#888;">Tap to reveal translation</div>
+        </div>
+
+        <div style="display:flex; gap:12px; margin-top:20px;">
+            <button onclick="prevCard()" style="flex:1; padding:14px; border-radius:9999px; background:#f1f5f9;">← Prev</button>
+            <button onclick="nextCard()" class="primary" style="flex:1;">Next →</button>
+        </div>
+        <div id="fcProgress" style="text-align:center; margin-top:12px; color:#666;">1 / 10</div>
+    </section>
+
+    <!-- DICTIONARY -->
+    <section class="page" id="page-dictionary">
+        <div style="display:flex; gap:8px; margin-bottom:16px;">
+            <input type="text" id="dictInput" placeholder="Search Korean, English or Hindi..." 
+                   onkeyup="filterDictionary()" style="flex:1; padding:14px; border-radius:9999px; border:2px solid #ddd;">
+            <button onclick="filterDictionary()" style="background:#22c55e; color:white; border:none; width:56px; border-radius:9999px;">🔍</button>
+        </div>
+        <div class="dict-list" id="dictList"></div>
+    </section>
+
+    <!-- QUIZ -->
+    <section class="page" id="page-quiz">
+        <div id="quizBox" style="background:#f8fafc; padding:24px; border-radius:20px;">
+            <div id="quizQuestion" style="font-size:32px; font-weight:700; text-align:center;"></div>
+            <div id="quizSub" style="text-align:center; margin:12px 0; color:#666;"></div>
+            <div id="quizOptions" style="margin-top:20px;"></div>
+            <div style="margin-top:20px; text-align:center;">
+                <button id="quizNext" onclick="nextQuiz()" disabled style="background:#22c55e; color:white; padding:12px 32px; border:none; border-radius:9999px;">Next</button>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<!-- AD SCRIPTS -->
+<div style="display:none;">
+    <script>atOptions = {'key':'6a2a20bae6f9b2da465952e04e83b8f5','format':'iframe','height':300,'width':160,'params':{}};</script>
+    <script src="https://www.highperformanceformat.com/6a2a20bae6f9b2da465952e04e83b8f5/invoke.js"></script>
+
+    <script>atOptions = {'key':'e37ebd8914702d4decba619be159fe81','format':'iframe','height':90,'width':728,'params':{}};</script>
+    <script src="https://www.highperformanceformat.com/e37ebd8914702d4decba619be159fe81/invoke.js"></script>
+
+    <script src="https://pl29332530.effectivecpmnetwork.com/6a/78/ba/6a78ba2ca8a241c5e4cda295fb083225.js"></script>
+
+    <script>atOptions = {'key':'84ad02dc1dcf68b53d7469a6d9ae1220','format':'iframe','height':50,'width':320,'params':{}};</script>
+    <script src="https://www.highperformanceformat.com/84ad02dc1dcf68b53d7469a6d9ae1220/invoke.js"></script>
+
+    <script>atOptions = {'key':'776ca31e87886fca5dcc5bc652537d17','format':'iframe','height':60,'width':468,'params':{}};</script>
+    <script src="https://www.highperformanceformat.com/776ca31e87886fca5dcc5bc652537d17/invoke.js"></script>
+
+    <script>atOptions = {'key':'dabaeabe92d4fcbe62fc3ffc7593335c','format':'iframe','height':250,'width':300,'params':{}};</script>
+    <script src="https://www.highperformanceformat.com/dabaeabe92d4fcbe62fc3ffc7593335c/invoke.js"></script>
+</div>
+
+<script>
+// ==================== FULL WORD DATABASE (Ready for 5000+) ====================
+const WORDS = [
+    { k: '안녕하세요', r: 'annyeonghaseyo', e: 'Hello', h: 'नमस्ते', cat: 'greetings' },
+    { k: '안녕', r: 'annyeong', e: 'Hi / Bye', h: 'नमस्ते / अलविदा', cat: 'greetings' },
+    { k: '감사합니다', r: 'gamsahamnida', e: 'Thank you', h: 'धन्यवाद', cat: 'greetings' },
+    { k: '미안합니다', r: 'mianhamnida', e: 'Sorry', h: 'माफ़ कीजिए', cat: 'greetings' },
+    { k: '네', r: 'ne', e: 'Yes', h: 'हाँ', cat: 'greetings' },
+    { k: '아니요', r: 'aniyo', e: 'No', h: 'नहीं', cat: 'greetings' },
+    { k: '하나', r: 'hana', e: 'One', h: 'एक', cat: 'numbers' },
+    { k: '둘', r: 'dul', e: 'Two', h: 'दो', cat: 'numbers' },
+    { k: '셋', r: 'set', e: 'Three', h: 'तीन', cat: 'numbers' },
+    { k: '빨간색', r: 'ppalgansaek', e: 'Red', h: 'लाल', cat: 'colors' },
+    { k: '파란색', r: 'paransaek', e: 'Blue', h: 'नीला', cat: 'colors' },
+    { k: '김치', r: 'kimchi', e: 'Kimchi', h: 'किमची', cat: 'food' },
+    { k: '사랑', r: 'sarang', e: 'Love', h: 'प्यार', cat: 'greetings' },
+    // Add more words here (you can paste 5000+ entries)
+    // Example format: { k: '한국어', r: 'hangugeo', e: 'Korean language', h: 'कोरियन भाषा', cat: 'greetings' },
+];
+
+// App State
+let currentPage = 'home';
+let currentCardIndex = 0;
+let cardRevealed = false;
+let shuffledWords = [];
+let currentCategory = 'all';
+
+let quizWords = [];
+let quizIndex = 0;
+let quizScore = 0;
+let quizAnswered = false;
+
+// Helper Functions
+function shuffle(arr) {
+    return [...arr].sort(() => Math.random() - 0.5);
+}
+
+function getWordsByCategory(cat) {
+    return cat === 'all' ? WORDS : WORDS.filter(w => w.cat === cat);
+}
+
+// Navigation
+function switchPage(page) {
+    currentPage = page;
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + page).classList.add('active');
+    
+    document.querySelectorAll('.nav-tabs button').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.page === page);
+    });
+
+    if (page === 'learn') renderFlashcard();
+    if (page === 'dictionary') filterDictionary();
+    if (page === 'quiz') initQuiz();
+}
+
+// Flashcard
+function renderFlashcard() {
+    shuffledWords = shuffledWords.length ? shuffledWords : shuffle(getWordsByCategory(currentCategory));
+    if (shuffledWords.length === 0) return;
+
+    const w = shuffledWords[currentCardIndex];
+    document.getElementById('fcKorean').textContent = w.k;
+    document.getElementById('fcRoman').textContent = w.r;
+    document.getElementById('fcEn').textContent = w.e;
+    document.getElementById('fcHi').textContent = w.h;
+    document.getElementById('fcTranslations').style.display = 'none';
+    document.getElementById('fcHint').textContent = 'Tap to reveal';
+    cardRevealed = false;
+    document.getElementById('fcProgress').textContent = `${currentCardIndex + 1} / ${shuffledWords.length}`;
+}
+
+function revealTranslation() {
+    const trans = document.getElementById('fcTranslations');
+    if (!cardRevealed) {
+        trans.style.display = 'block';
+        document.getElementById('fcHint').textContent = 'Tap to hide';
+    } else {
+        trans.style.display = 'none';
+        document.getElementById('fcHint').textContent = 'Tap to reveal';
+    }
+    cardRevealed = !cardRevealed;
+}
+
+function nextCard() {
+    currentCardIndex = (currentCardIndex + 1) % shuffledWords.length;
+    renderFlashcard();
+}
+
+function prevCard() {
+    currentCardIndex = (currentCardIndex - 1 + shuffledWords.length) % shuffledWords.length;
+    renderFlashcard();
+}
+
+// Dictionary
+function filterDictionary() {
+    const q = document.getElementById('dictInput').value.toLowerCase().trim();
+    const list = document.getElementById('dictList');
+    let results = q ? WORDS.filter(w => 
+        w.k.toLowerCase().includes(q) || 
+        w.r.toLowerCase().includes(q) || 
+        w.e.toLowerCase().includes(q) || 
+        w.h.toLowerCase().includes(q)
+    ) : WORDS;
+
+    let html = '';
+    results.forEach(w => {
+        html += `
+            <div class="dict-item">
+                <strong>${w.k}</strong> (${w.r})<br>
+                <span style="color:#1e40af">🇬🇧 ${w.e}</span><br>
+                <span style="color:#22c55e">🇮🇳 ${w.h}</span>
+            </div>`;
+    });
+    list.innerHTML = html || '<p style="padding:20px; text-align:center; color:#888;">No words found</p>';
+}
+
+// Quiz
+function initQuiz() {
+    quizWords = shuffle(getWordsByCategory(currentCategory));
+    quizIndex = 0;
+    quizScore = 0;
+    renderQuizQuestion();
+}
+
+function renderQuizQuestion() {
+    if (quizIndex >= Math.min(10, quizWords.length)) {
+        document.getElementById('quizQuestion').innerHTML = `🎉 Quiz Complete!<br>Score: ${quizScore}/${Math.min(10, quizWords.length)}`;
+        document.getElementById('quizOptions').innerHTML = '';
+        return;
+    }
+
+    const word = quizWords[quizIndex];
+    document.getElementById('quizQuestion').textContent = word.k;
+    document.getElementById('quizSub').textContent = 'Choose the correct meaning';
+
+    let options = [word.e];
+    let others = WORDS.filter(w => w.e !== word.e);
+    others = shuffle(others).slice(0, 3);
+    options = shuffle([...options, ...others.map(o => o.e)]);
+
+    let html = '';
+    options.forEach((opt, i) => {
+        html += `<button onclick="answerQuiz(${i}, '${word.e}')">${opt}</button>`;
+    });
+    document.getElementById('quizOptions').innerHTML = html;
+}
+
+window.answerQuiz = function(selectedIdx, correct) {
+    const buttons = document.querySelectorAll('#quizOptions button');
+    buttons.forEach((btn, i) => {
+        btn.disabled = true;
+        if (btn.textContent === correct) btn.style.background = '#86efac';
+        else if (i === selectedIdx) btn.style.background = '#fda4af';
+    });
+
+    if (buttons[selectedIdx].textContent === correct) quizScore++;
+    document.getElementById('quizNext').disabled = false;
+};
+
+window.nextQuiz = function() {
+    quizIndex++;
+    renderQuizQuestion();
+};
+
+// Init everything
+function init() {
+    document.querySelectorAll('.nav-tabs button').forEach(btn => {
+        btn.addEventListener('click', () => switchPage(btn.dataset.page));
+    });
+
+    // Initial load
+    document.getElementById('wordCount').textContent = WORDS.length;
+    document.getElementById('streakNum').textContent = "7"; // demo streak
+    renderFlashcard();
+    filterDictionary();
+}
+
+window.switchPage = switchPage;
+window.revealTranslation = revealTranslation;
+window.nextCard = nextCard;
+window.prevCard = prevCard;
+window.filterDictionary = filterDictionary;
+window.initQuiz = initQuiz;
+window.nextQuiz = nextQuiz;
+
+// Start the app
+init();
+</script>
+
+</body>
+</html>
